@@ -2,7 +2,7 @@ default_scope = 'mmdet'
 
 default_hooks = dict(
     timer=dict(type='IterTimerHook'),
-    logger=dict(type='LoggerHook', interval=50),
+    logger=dict(type='LoggerHook', interval=10),
     param_scheduler=dict(type='ParamSchedulerHook'),
     checkpoint=dict(type='CheckpointHook', interval=1),
     sampler_seed=dict(type='DistSamplerSeedHook'),
@@ -14,10 +14,10 @@ env_cfg = dict(
     dist_cfg=dict(backend='nccl'),
 )
 
-vis_backends = [dict(type='LocalVisBackend')]
+vis_backends = [dict(type='LocalVisBackend'),dict(type='TensorboardVisBackend')]
 visualizer = dict(
     type='DetLocalVisualizer', vis_backends=vis_backends, name='visualizer')
-log_processor = dict(type='LogProcessor', window_size=50, by_epoch=True)
+log_processor = dict(type='LogProcessor', window_size=50, by_epoch=False)
 
 log_level = 'INFO'
 load_from = None

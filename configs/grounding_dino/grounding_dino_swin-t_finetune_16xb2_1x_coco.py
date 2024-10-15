@@ -2,9 +2,11 @@ _base_ = [
     '../_base_/datasets/coco_detection.py',
     '../_base_/schedules/schedule_1x.py', '../_base_/default_runtime.py'
 ]
-load_from = 'https://download.openmmlab.com/mmdetection/v3.0/grounding_dino/groundingdino_swint_ogc_mmdet-822d7e9d.pth'  # noqa
+# load_from = 'https://download.openmmlab.com/mmdetection/v3.0/grounding_dino/groundingdino_swint_ogc_mmdet-822d7e9d.pth'  # noqa
+# load_from = 'https://download.openmmlab.com/mmdetection/v3.0/grounding_dino/grounding_dino_swin-t_finetune_16xb2_1x_coco/grounding_dino_swin-t_finetune_16xb2_1x_coco_20230921_152544-5f234b20.pth'
+# load_from = 'https://download.openmmlab.com/mmdetection/v3.0/grounding_dino/grounding_dino_swin-b_finetune_16xb2_1x_coco/grounding_dino_swin-b_finetune_16xb2_1x_coco_20230921_153201-f219e0c0.pth'
 lang_model_name = 'bert-base-uncased'
-
+load_from = 'https://download.openmmlab.com/mmdetection/v3.0/grounding_dino/grounding_dino_swin-t_finetune_16xb2_1x_coco/grounding_dino_swin-t_finetune_16xb2_1x_coco_20230921_152544-5f234b20.pth'
 model = dict(
     type='GroundingDINO',
     num_queries=900,
@@ -39,7 +41,7 @@ model = dict(
         drop_path_rate=0.2,
         patch_norm=True,
         out_indices=(1, 2, 3),
-        with_cp=True,
+        with_cp=False,
         convert_weights=False),
     neck=dict(
         type='ChannelMapper',
@@ -88,7 +90,7 @@ model = dict(
         num_feats=128, normalize=True, offset=0.0, temperature=20),
     bbox_head=dict(
         type='GroundingDINOHead',
-        num_classes=80,
+        num_classes=2,
         sync_cls_avg_factor=True,
         contrastive_cfg=dict(max_text_len=256, log_scale=0.0, bias=False),
         loss_cls=dict(
@@ -187,18 +189,18 @@ optim_wrapper = dict(
         'backbone': dict(lr_mult=0.1)
     }))
 # learning policy
-max_epochs = 12
+max_iters = 12*275
 param_scheduler = [
     dict(
         type='MultiStepLR',
         begin=0,
-        end=max_epochs,
-        by_epoch=True,
-        milestones=[11],
+        end=max_iters,
+        by_epoch=False,
+        milestones=[11*275],
         gamma=0.1)
 ]
 
 # NOTE: `auto_scale_lr` is for automatically scaling LR,
 # USER SHOULD NOT CHANGE ITS VALUES.
 # base_batch_size = (16 GPUs) x (2 samples per GPU)
-auto_scale_lr = dict(base_batch_size=32)
+auto_scale_lr = dict(base_batch_size=16)
